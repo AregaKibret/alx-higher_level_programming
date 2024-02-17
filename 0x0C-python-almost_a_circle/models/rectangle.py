@@ -1,14 +1,19 @@
-#!/usr/bin/python3
-'''Module for Rectangle class.'''
+#!/bin/usr/python3
+"""
+Rectangle module
+"""
 from models.base import Base
 
 
 class Rectangle(Base):
-    '''A Rectangle class.'''
-
+    """
+    Rectangle class
+    """
     def __init__(self, width, height, x=0, y=0, id=None):
-        '''Constructor.'''
+        """Initialize a new Rectangle.
+        """
         super().__init__(id)
+
         self.width = width
         self.height = height
         self.x = x
@@ -16,91 +21,157 @@ class Rectangle(Base):
 
     @property
     def width(self):
-        '''Width of this rectangle.'''
+        """
+        width getter
+        """
         return self.__width
 
     @width.setter
     def width(self, value):
-        self.validate_integer("width", value, False)
+        """
+        Width setter
+        """
+        # added a check for when value is a bool, if the check is removed
+        # the unittest for it will fail
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise TypeError("width must be an integer")
+        if value <= 0:
+            raise ValueError("width must be > 0")
         self.__width = value
 
     @property
     def height(self):
-        '''Height of this rectangle.'''
+        """
+        height getter
+        """
         return self.__height
 
     @height.setter
     def height(self, value):
-        self.validate_integer("height", value, False)
+        """
+        height setter
+        """
+        if not isinstance(value, int):
+            raise TypeError("height must be an integer")
+        if value <= 0:
+            raise ValueError("height must be > 0")
+
         self.__height = value
 
     @property
     def x(self):
-        '''x of this rectangle.'''
+        """
+        x getter
+        """
         return self.__x
 
     @x.setter
     def x(self, value):
-        self.validate_integer("x", value)
+        """
+        x setter
+        """
+        # added a check for when value is a bool, if the check is removed
+        # the unittest for it will fail
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise TypeError("x must be an integer")
+        if value < 0:
+            raise ValueError("x must be >= 0")
         self.__x = value
 
     @property
     def y(self):
-        '''y of this rectangle.'''
+        """
+        y getter
+        """
         return self.__y
 
     @y.setter
     def y(self, value):
-        self.validate_integer("y", value)
+        """
+        y setter
+        """
+        if not isinstance(value, int):
+            raise TypeError("y must be an integer")
+        if value < 0:
+            raise ValueError("y must be >= 0")
         self.__y = value
 
-    def validate_integer(self, name, value, eq=True):
-        '''Method for validating the value.'''
-        if type(value) != int:
-            raise TypeError("{} must be an integer".format(name))
-        if eq and value < 0:
-            raise ValueError("{} must be >= 0".format(name))
-        elif not eq and value <= 0:
-            raise ValueError("{} must be > 0".format(name))
-
     def area(self):
-        '''Computes area of this rectangle.'''
-        return self.width * self.height
+        """
+        Returna area of the rectangle
+        """
+        area = self.width * self.height
+
+        return area
 
     def display(self):
-        '''Prints string representation of this rectangle.'''
-        s = '\n' * self.y + \
-            (' ' * self.x + '#' * self.width + '\n') * self.height
-        print(s, end='')
+        """
+        Prints size of rectangle using #
+        """
+        for _ in range(self.y):
+            print()
+
+        for _ in range(self.height):
+            print(" " * self.x + "#" * self.width)
 
     def __str__(self):
-        '''Returns string info about this rectangle.'''
-        return '[{}] ({}) {}/{} - {}/{}'.\
-            format(type(self).__name__, self.id, self.x, self.y, self.width,
-                   self.height)
-
-    def __update(self, id=None, width=None, height=None, x=None, y=None):
-        '''Internal method that updates instance attributes via */**args.'''
-        if id is not None:
-            self.id = id
-        if width is not None:
-            self.width = width
-        if height is not None:
-            self.height = height
-        if x is not None:
-            self.x = x
-        if y is not None:
-            self.y = y
+        """
+        Return the print() and str() representation of the Rectangle.
+        """
+        return "[Rectangle] ({}) {}/{} - {}/{}".format(self.id,
+                                                       self.x,
+                                                       self.y,
+                                                       self.width,
+                                                       self.height)
 
     def update(self, *args, **kwargs):
-        '''Updates instance attributes via no-keyword & keyword args.'''
-        # print(args, kwargs)
+        """
+        Assign arguments to attributes based on their positions.
+        """
         if args:
-            self.__update(*args)
-        elif kwargs:
-            self.__update(**kwargs)
+            for count, arg in enumerate(args):
+                if count == 0:
+                    self.id = arg
+                elif count == 1:
+                    self.width = arg
+                elif count == 2:
+                    self.height = arg
+                elif count == 3:
+                    self.x = arg
+                elif count == 4:
+                    self.y = arg
+                else:
+                    break
+                
+        elif len(kwargs) > 0:
+            for key, value in kwargs.items():
+                if key == "id":
+                    self.id = value
+                elif key == "width":
+                    self.width = value
+                elif key == "height":
+                    self.height = value
+                elif key == "x":
+                    self.x = value
+                elif key == "y":
+                    self.y = value
+                # removed the break statement, incase if the passed args are greater
+                # than 5, and one of the attributes is at the end
 
     def to_dictionary(self):
-        '''Returns dictionary representation of this class.'''
-        return {"id": self.id, "width": self.__width, "height": self.__height,
-                "x": self.__x, "y": self.__y}
+        """
+        Represents a dictionary representation of rectangle
+        """
+        rec_dict = {
+                "id": self.id,
+                "width": self.width,
+                "height": self.height,
+                "x": self.x,
+                "y": self.y
+        }
+
+        return rec_dict
+
+
+if __name__ == "__main__":
+    pass
